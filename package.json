@@ -1,0 +1,12 @@
+{
+  "name": "ms-authentication",
+  "version": "1.0.0",
+  "description": "Microservice para autenticação criando no Bootcamp DIO Impulso JS 2022",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./index.js" 
+  },
+  "author": "Pitossomo",
+  "license": "ISC"
+}
