@@ -112,3 +112,33 @@
 - Instalamos o ts-node-dev `npm install --save-dev ts-node-dev`
 - Criamos o script no *package.json* :
   - `"dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/index.ts"`
+-----
+6. Rotas apartadas
+- Criaremos um diretório *src/routes* no qual colocaremos nossas rotas, apartando-as do *index.ts*
+- Criaremos dois arquivos:
+  -*status.route.ts*:
+    ```ts
+    import { Router, Request, Response, NextFunction } from "express"
+
+    const statusRoute = Router()
+
+    statusRoute.get('/status', (req: Request, res: Response, next: NextFunction) => {
+      res.status(200).send({ foo: 'bar' })
+    })
+
+    export default statusRoute
+    ```
+  -*users.route.ts*:
+    ```ts
+    import { Router, Request, Response, NextFunction } from "express"
+
+    const usersRoute = Router()
+
+    usersRoute.get('/users', (req: Request, res: Response, next: NextFunction) => {
+      const users: [] = []
+      res.status(200).send(users)
+    })
+
+    export default usersRoute
+    ```
+  
