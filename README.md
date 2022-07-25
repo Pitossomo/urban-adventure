@@ -20,7 +20,9 @@
 - Com o *package.json* criado para manter nossos metadados, podemos criar nosso *index.js* contendo apenas a instrução `console.log("Hello world)`]
 - Para iniciar o projeto, criamos no package.json o script `"start": "node ./index.js"`
 - Instalamos e configuramos o typescript no projeto com os comandos:
-  - `npm install typescript`  - instala o pacote do Typescript
+  - `npm install -g typescript` - instala o pacote do Typescript globalmente
+  - `npm install --save-dev typescript`  - instala o pacote do Typescript localmente como 
+  - `npm install --save-dev @types/node` - instala os tipos do nodeJS
   - `tsc --init`  - cria o arquivo tsconfig.json
 - Alteramos o arquivo `tsconfig.json` para as configurações a serem usadas no nosso projeto:
   ```json
@@ -48,3 +50,23 @@
   - a pasta `dist` para o código transpilado em javascript 
   - a pasta `src` para o código desenvolvido em typescript
   - a pasta `src/@types` com a definição dos tipos e interfaces criados para o projeto
+- Alteramos o *package.json* para configurar o arquivo a ser executado:
+  ```json
+  {
+    "name": "ms-authentication",
+    "version": "1.0.0",
+    "description": "Microservice para autenticação criando no Bootcamp DIO Impulso JS 2022",
+    "main": "./dist/index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "start": "node ./",
+      "build": "tsc -p ./"
+    },
+    "author": "Pitossomo",
+    "license": "ISC",
+    "devDependencies": {
+      "@types/node": "^18.6.1",
+      "typescript": "^4.7.4"
+    }
+  }
+  ```
