@@ -7,7 +7,7 @@
     "start": "node ./",
     "build": "rm -rf ./dist && tsc -p ./",
     "test": "jest",
-    "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/index.ts"
+    "dev": "export PORT=3001 && ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/index.ts"
   },
   "author": "Pitossomo",
   "license": "ISC",

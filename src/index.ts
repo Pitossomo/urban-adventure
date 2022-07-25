@@ -7,6 +7,8 @@ const app = express()
 app.use(usersRoute)
 app.use(statusRoute)
 
-app.listen(3000, () => {
-  console.log('Aplicação executando na porta 3000')
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, () => {
+  console.log(`Aplicação executando na porta ${PORT}`)
 })
