@@ -87,8 +87,8 @@
     preset: 'ts-jest',
   };
   ```
-
 ------
+## Iniciando o servidor e as rotas
 4. Criando um server com express
 - O express é um gerenciador de rotas sob o protocolo *HTTP*
   - Instalamos o express `npm install express`
@@ -141,4 +141,94 @@
 
     export default usersRoute
     ```
-  
+7. CRUD para usuários
+- Como lidaremos com métodos POST e requisições em JSON, precisamos configurar o express para isso no *index.ts*:
+  ```ts
+  ...
+  const app = express()
+  app.use(express.json())
+  app.use(usersRoute)
+  app.use(statusRoute)
+  ...
+  ```
+- Criaremos os endpoints para os métodos CRUD dos usuários no arquivo */src/routes/users.routes.ts*:
+  ```ts
+  import { Router, Request, Response, NextFunction } from "express"
+  import User from "../@types/User"
+
+  const usersDB: User[] = []
+  const usersRoute = Router()
+
+  usersRoute.get('/users', (req: Request, res: Response, next: NextFunction) => {
+    res.status(200).send(usersDB)
+  })
+
+  usersRoute.get('/users/:uuid', (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
+    const uuid = req.params.uuid
+    res.status(200).send({ uuid: uuid })
+  })
+
+  usersRoute.post('/users', (req: Request, res: Response, next: NextFunction) => {
+    const username: string = req.body.username 
+    if (!username || username==='') return res.status(400)
+
+    const newUser = {
+      uuid: usersDB.length+1, 
+      username: req.body.username 
+    }
+
+    usersDB.push(newUser)
+    res.status(201).send(newUser)
+  })
+
+  usersRoute.put('/users/:uuid', (req: Request, res: Response, next: NextFunction) => {
+    const uuid = req.params.uuid
+    const username: string = req.body.username 
+    if (!username || username==='') return res.status(400)
+    // TODO PUT method
+    res.status(200)
+  })
+
+  usersRoute.delete('/users/:uuid', (req: Request, res: Response, next: NextFunction) => {
+    const uuid = req.params.uuid
+    // TODO DELETE method
+    res.status(200)
+  })
+
+  export default usersRoute
+  ```
+-----
+## Integrando o bando de dados
+8. Configurando o postgres
+- Instalaremos o node-postgres e seus tipos
+  - `npm install pg`
+  - `npm install --save-dev @types/pg`
+- Criaremos um arquivo *src/db.ts* para conectar nosso banco de dados
+- Instanciaremos um Pool para lidar com as frequentes requisições ao banco de dados, conforme orienta a [documentação da biblioteca](https://node-postgres.com/features/pooling):
+  ```ts
+  import { Pool } from "pg";
+
+  const db = new Pool({connectionString: process.env.DB_CONNECTION_STRING})
+
+  export default db
+  ```
+- Criaremos uma database gratuita no (ElephantSQL)[https://www.elephantsql.com/]
+- Criaremos uma pasta *src/sql* para guardar os scripts SQL que usaremos, sendo um em cada arquivo:
+  - init.sql
+    ```sql
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; /* enables uuid creation */
+    CREATE EXTENSION IF NOT EXISTS "pgcrypto"; /* enables crypt */
+
+    CREATE TABLE IF NOT EXISTS app_user(
+      uuid uuid DEFAULT uuid_generate_v4(),   /* creates an unique, non-incremental id for each user */
+      username VARCHAR NOT NULL,
+      password VARCHAR NOT NULL,
+      PRIMARY KEY (uuid)
+    );
+
+    /* The values of MY-NAME, MY-PASSWORD & MY-SALT* shall be redefined */
+    INSERT INTO app_user(username, password) VALUES ('MY-NAME', crypt('MY-PASSWORD', 'MY-SALT'));
+    ```
+- Executados o arquivo de inicialização acima no site do database, criando a tabela de usuários e um usuário inicial
+  - importante usar um nome da tabela de usuários diferente de *users*, que é o padrão que alguns databases já utilizam - no nosso caso, colocamos *app_users*
+

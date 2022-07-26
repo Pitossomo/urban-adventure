@@ -5,9 +5,19 @@ const server = axios.create({
 })
 
 describe('/users', () => {
-  it('returns succesfully', async () => {
+  it('returns all users', async () => {
     const response = await server.get('/') 
-
     expect(response.data).toHaveLength(0)
+  })
+
+  it('returns user data', async () => {
+    const response = await server.get('/1234')
+    expect(response.data).toMatchObject({ uuid: '1234' })
+  })
+
+  it('returns succesfully the user posted', async () => {
+    const response = await server.post('/', { username: 'Pitossomo'})
+    expect(response.data).toHaveProperty('uuid')
+    expect(response.data).toMatchObject({ username: 'Pitossomo' })
   })
 })
