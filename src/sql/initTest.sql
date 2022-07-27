@@ -1,7 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; /* enables uuid creation */
 CREATE EXTENSION IF NOT EXISTS "pgcrypto"; /* enables crypt */
 
-DROP TABLE app_user
+DROP TABLE IF EXISTS app_user;
 
 CREATE TABLE IF NOT EXISTS app_user(
   uuid uuid DEFAULT uuid_generate_v4(),   /* creates an unique, non-incremental id for each user */
