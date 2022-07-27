@@ -7,7 +7,7 @@ const server = axios.create({
 describe('/users', () => {
   it('returns all users', async () => {
     const response = await server.get('/') 
-    expect(response.data).toHaveLength(0)
+    expect(response.data).toHaveLength(5)
   })
 
   it('returns user data', async () => {

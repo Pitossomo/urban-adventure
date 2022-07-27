@@ -1,0 +1,2 @@
+# Expect all users
+GET http://localhost:3001/users

@@ -4,10 +4,10 @@
   "description": "Microservice para autenticação criando no Bootcamp DIO Impulso JS 2022",
   "main": "./dist/index.js",
   "scripts": {
-    "start": "node ./",
+    "start": "export NODE_ENV=production && node ./",
     "build": "rm -rf ./dist && tsc -p ./",
     "test": "jest",
-    "dev": "export PORT=3001 && ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/index.ts"
+    "dev": "export NODE_ENV=test && export PORT=3001 && ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/index.ts"
   },
   "author": "Pitossomo",
   "license": "ISC",

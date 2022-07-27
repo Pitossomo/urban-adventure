@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response, Router } from "express"
 import User from "../@types/User"
+import userRepository from "../repositories/user.repository"
 
-const usersDB: User[] = []
 const usersRoute = Router()
+const usersDB = []
 
-usersRoute.get('/users', (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).send(usersDB)
+usersRoute.get('/users', async (req: Request, res: Response, next: NextFunction) => {
+  const users = await userRepository.findAllUsers()
+  res.status(200).send(users)
 })
 
 usersRoute.get('/users/:uuid', (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {

@@ -212,6 +212,7 @@
 
   export default db
   ```
+- Observa-se que usamos a variável de ambiente DB_CONNECTION_STRING para conectar com o banco de dados, definida em um arquivo "não comittado" à parte 
 - Criaremos uma database gratuita no (ElephantSQL)[https://www.elephantsql.com/]
 - Criaremos uma pasta *src/sql* para guardar os scripts SQL que usaremos, sendo um em cada arquivo:
   - init.sql
@@ -231,4 +232,46 @@
     ```
 - Executados o arquivo de inicialização acima no site do database, criando a tabela de usuários e um usuário inicial
   - importante usar um nome da tabela de usuários diferente de *users*, que é o padrão que alguns databases já utilizam - no nosso caso, colocamos *app_users*
+
+9. Conectando com o postgres
+- Criaremos um arquivo *src/repositories/user.repositories.ts* para conectar com o banco de dados:
+  ```ts
+  
+  ```
+- Criaremos um arquivo *src/models/user.models.ts* para definir a forma do nosso usuário:
+  ```ts
+  type User = {
+    uuid?: string;
+    username: string;
+    password?: string;
+  }
+
+  export default User;
+  ```
+- Para testarmos, devemos criar uma instância separada do banco de dados, com ajuda das variáveis de ambiente para definir qual a connectionString necessária
+  - no arquivo *db.ts*:
+    ```ts
+    ...
+    let  connectionString
+    switch (process.env.NODE_ENV) {
+      case "production":
+        connectionString = process.env.DB_CONNECTION_STRING
+        break
+      case "test":
+        connectionString = process.env.TEST_CONNECTION_STRING
+        break
+      default:
+        connectionString = process.env.TEST_CONNECTION_STRING
+    }
+    ...
+    ```
+  - no *package.json*:
+    ```json
+    "scripts": {
+      "start": "export NODE_ENV=production && node ./",
+      "build": "rm -rf ./dist && tsc -p ./",
+      "test": "jest",
+      "dev": "export NODE_ENV=test && export PORT=3001 && ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/index.ts"
+    },
+    ```
 
