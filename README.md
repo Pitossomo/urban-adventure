@@ -456,4 +456,73 @@
   ```
 - Assim concluímos nossos métodos CRUD, mas ainda devemos lidar com os error!
 ## Manuseando erros
-13. ...
+13. Tratando erros com try-catch
+- Podemos usar um sistema de vários *try-catch* nas nossas rotas e lidarmos com cada uma delas como no código abaixo:
+  ```ts
+  usersRoute.get('/users/:uuid', async (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
+    try {
+      const uuid = req.params.uuid
+      const user = await userRepository.findById(uuid)
+      res.status(200).send(user)
+    } catch (error) {
+      if (error instanceof DatabaseError) {
+        res.sendStatus(400)
+      } else {
+        res.sendStatus(500)
+      }
+    }
+  })
+  ```
+- Ocorre que teriamos que fazer uma estrutura dessa para cada rota existente, e em cada rota avaliarmos cada tipo de erro possível
+- Poderiamos ainda usar uma função handleError(res, error) dentro do catch para reutilizarmos o código
+- No entanto, uma solução mais usual é o uso de um `middleware`
+
+14. Erros e Middlewares
+- Middleware é uma função que intercepta as requisições, usado para tratamento de erros ou alguma outra finalidade genérica 
+- Criaremos o *src/middlewares/errorHandler.middleware.ts*:
+  ```ts
+  import { NextFunction, Request, Response } from "express";
+  import DatabaseError from "../models/errors/database.error.model";
+
+  function errorHandler (error: any, req: Request, res: Response, next: NextFunction) {
+    if (error instanceof DatabaseError) {
+      res.sendStatus(400)
+    } else {
+      res.sendStatus(500)
+    }
+  }
+
+  export default errorHandler
+  ```
+- Importamos nosso novo middleware no *index.ts*:
+  ```ts
+  ...
+  // App configuration
+  const app = express()
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
+
+  // Routes configuration
+  app.use(usersRoute)
+  app.use(statusRoute)
+
+  // Error Handler middleware configuration
+  app.use(errorHandler)
+  ...
+  ```
+- Nas nossas rotas, passamos os blocos try-catch chamando a função next, por exemplo:
+  ```ts
+  usersRoute.delete('/users/:uuid', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const uuid = req.params.uuid
+      await userRepository.delete(uuid)
+      res.sendStatus(200)
+    } catch (error) {
+      next(error)
+    }
+  })
+  ```
+- Poderiamos [eliminar totalmente os blocos try-catch](https://fullstackopen.com/en/part4/testing_the_backend#eliminating-the-try-catch) com o uso da biblioteca [express-async-errors](https://www.npmjs.com/package/express-async-errors), importando-a no *index.ts*.
+
+## Concluindo o microsserviço
+15. ...

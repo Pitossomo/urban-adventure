@@ -1,2 +1,5 @@
-# Expect all users
+### Expect all users
 GET http://localhost:3001/users
+
+### Expect status 400
+GET http://localhost:3001/users/fdsfdsfds

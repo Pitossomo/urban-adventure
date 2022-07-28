@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response, Router } from "express"
-import User from "../@types/User"
+import DatabaseError from "../models/errors/database.error.model"
 import userRepository from "../repositories/user.repository"
 
 const usersRoute = Router()
-const usersDB = []
 
 usersRoute.get('/users', async (req: Request, res: Response, next: NextFunction) => {
   const users = await userRepository.findAllUsers()
@@ -11,39 +10,54 @@ usersRoute.get('/users', async (req: Request, res: Response, next: NextFunction)
 })
 
 usersRoute.get('/users/:uuid', async (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
-  const uuid = req.params.uuid
-  const user = await userRepository.findById(uuid)
-  if (user) res.status(200).send(user)
-  else res.status(404) 
+  try {
+    const uuid = req.params.uuid
+    const user = await userRepository.findById(uuid)
+    res.status(200).send(user)
+  } catch (error) {
+    next(error)
+  }
 })
 
 usersRoute.post('/users', async (req: Request, res: Response, next: NextFunction) => {
-  const username: string = req.body.username 
-  const password: string = req.body.password 
-  
-  if (!username || username==='' || !password || password==='' ) return res.status(400)
+  try {
+    const username: string = req.body.username 
+    const password: string = req.body.password 
+    
+    if (!username || username==='' || !password || password==='' ) return res.status(400)
 
-  const newUser = { username, password }
+    const newUser = { username, password }
 
-  const newUserId = await userRepository.create(newUser)
-  res.status(201).send(newUserId)
+    const newUserId = await userRepository.create(newUser)
+    res.status(201).send(newUserId)
+  } catch (error) {
+    next(error)
+  }
 })
 
 usersRoute.put('/users/:uuid', async (req: Request, res: Response, next: NextFunction) => {
-  const uuid = req.params.uuid
-  const username: string = req.body.username 
-  const password: string = req.body.password 
+  try {
+    const uuid = req.params.uuid
+    const username: string = req.body.username 
+    const password: string = req.body.password 
 
-  if (!username || username==='' || !password || password==='' ) return res.status(400)
+    if (!username || username==='' || !password || password==='' ) return res.status(400)
 
-  await userRepository.update({uuid, username, password})
-  res.status(200).send()
+    await userRepository.update({uuid, username, password})
+    res.sendStatus(200)
+  } catch (error) {
+    next(error)
+  }
 })
 
 usersRoute.delete('/users/:uuid', async (req: Request, res: Response, next: NextFunction) => {
-  const uuid = req.params.uuid
-  await userRepository.delete(uuid)
-  res.status(200).send()
+  try {
+    const uuid = req.params.uuid
+    await userRepository.delete(uuid)
+    res.sendStatus(200)
+  } catch (error) {
+    next(error)
+  }
 })
 
 export default usersRoute

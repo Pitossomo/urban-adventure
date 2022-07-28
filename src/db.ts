@@ -12,8 +12,6 @@ switch (process.env.NODE_ENV) {
     connectionString = process.env.TEST_CONNECTION_STRING
 }
 
-console.log(process.env.NODE_ENV)
-
 const db = new Pool({ connectionString })
 
 export default db
