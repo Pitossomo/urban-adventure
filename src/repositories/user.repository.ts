@@ -27,6 +27,42 @@ class UserRepository {
 
     return user
   }
+
+  async create(user: User): Promise<string | null> {
+    const script = `
+      INSERT INTO app_user (
+        username,
+        password
+      )
+      VALUES ($1, crypt($2, $3))
+      RETURNING uuid
+    `
+
+    const salt = process.env.NODE_ENV === 'production' ? process.env.MY_SALT : 'MY_SALT'
+    const values = [user.username, user.password, salt]
+
+    const { rows } = await db.query<{ uuid: string }>(script, values)
+    const newUserId = rows[0].uuid || null
+    return newUserId   
+  } 
+
+  async update(user: User): Promise<void> {
+    const script = `
+      UPDATE app_user 
+      SET
+        username = $1,
+        password = crypt($2, $3)
+      WHERE uuid = $4
+    `
+
+    const salt = process.env.NODE_ENV === 'production' ? process.env.MY_SALT : 'MY_SALT'
+    const values = [user.username, user.password, salt, user.uuid]
+
+    await db.query<User>(script, values)
+  } 
+
 }
+
+
 
 export default new UserRepository()

@@ -337,3 +337,52 @@
         return user
       }
     ```
+
+10. Inserindo usuários
+- Podemos escrever um teste para o método POST:
+  ```ts
+  it('returns uuid of saved user on POST', async () => {
+    const response = await server.post('/', { username: "peroxissomo", password: 'MY_PASSWORD'})
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    expect(response.data).toMatch(uuidRegex)
+  })
+  ```
+- A partir daí, escrevemos o código que irá lidar com a rota especificada:
+  - no arquivo *users.route.ts*
+    ```ts
+    usersRoute.post('/users', async (req: Request, res: Response, next: NextFunction) => {
+      const username: string = req.body.username 
+      const password: string = req.body.password 
+      
+      if (!username || username==='' || !password || password==='' ) return res.status(400)
+
+      const newUser = { username, password }
+
+      const savedUserId = await userRepository.create(newUser)
+      res.status(201).send(savedUserId)
+    })
+    ```
+  - no arquivo *user.repository.ts*
+    ```ts
+    async create(user: User): Promise<string | null> {
+      const script = `
+        INSERT INTO app_user (
+          username,
+          password
+        )
+        VALUES ($1, crypt($2, $3))
+        RETURNING uuid
+      `
+
+      const salt = process.env.NODE_ENV === 'production' ? process.env.MY_SALT : 'MY_SALT'
+      const values = [user.username, user.password, salt]
+
+      const { rows } = await db.query<{ uuid: string }>(script, values)
+      console.log('returned')
+      const newUserId = rows[0].uuid || null
+      return newUserId
+    }
+    ```
+
+11. Métodos update e delete
+- O mesmo pensamento usado para o método POST será usado para os métodos DELETE e PUT

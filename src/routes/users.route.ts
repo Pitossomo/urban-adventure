@@ -17,31 +17,33 @@ usersRoute.get('/users/:uuid', async (req: Request<{ uuid: string }>, res: Respo
   else res.status(404) 
 })
 
-usersRoute.post('/users', (req: Request, res: Response, next: NextFunction) => {
+usersRoute.post('/users', async (req: Request, res: Response, next: NextFunction) => {
   const username: string = req.body.username 
-  if (!username || username==='') return res.status(400)
+  const password: string = req.body.password 
+  
+  if (!username || username==='' || !password || password==='' ) return res.status(400)
 
-  const newUser = {
-    uuid: usersDB.length+1, 
-    username: req.body.username 
-  }
+  const newUser = { username, password }
 
-  usersDB.push(newUser)
-  res.status(201).send(newUser)
+  const newUserId = await userRepository.create(newUser)
+  res.status(201).send(newUserId)
 })
 
-usersRoute.put('/users/:uuid', (req: Request, res: Response, next: NextFunction) => {
+usersRoute.put('/users/:uuid', async (req: Request, res: Response, next: NextFunction) => {
   const uuid = req.params.uuid
   const username: string = req.body.username 
-  if (!username || username==='') return res.status(400)
-  // TODO PUT method
-  res.status(200)
+  const password: string = req.body.password 
+
+  if (!username || username==='' || !password || password==='' ) return res.status(400)
+
+  await userRepository.update({uuid, username, password})
+  res.status(200).send()
 })
 
 usersRoute.delete('/users/:uuid', (req: Request, res: Response, next: NextFunction) => {
   const uuid = req.params.uuid
   // TODO DELETE method
-  res.status(200)
+  res.status(200).send()
 })
 
 export default usersRoute

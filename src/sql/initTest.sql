@@ -16,4 +16,3 @@ INSERT INTO app_user(username, password) VALUES ('pirossomo', crypt('MY-PASSWORD
 INSERT INTO app_user(username, password) VALUES ('xistossomo', crypt('MY-PASSWORD', 'MY-SALT'));
 INSERT INTO app_user(username, password) VALUES ('ribossomo', crypt('MY-PASSWORD', 'MY-SALT'));
 INSERT INTO app_user(username, password) VALUES ('pitossomo', crypt('MY-PASSWORD', 'MY-SALT'));
-

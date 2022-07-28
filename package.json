@@ -6,7 +6,7 @@
   "scripts": {
     "start": "export NODE_ENV=production && node ./",
     "build": "rm -rf ./dist && tsc -p ./",
-    "test": "jest",
+    "test": "jest --verbose",
     "dev": "export NODE_ENV=test && export PORT=3001 && ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/index.ts"
   },
   "author": "Pitossomo",
