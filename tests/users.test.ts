@@ -44,4 +44,9 @@ describe('/users', () => {
     const response = await server.put('/'+lastUserId, modifiedUser)
     expect(response.status).toBe(200)
   })
+
+  it('remove user by his uuid on DELETE', async () => {
+    const response = await server.delete('/'+lastUserId)
+    expect(response.status).toBe(200)
+  })
 })

@@ -338,7 +338,7 @@
       }
     ```
 
-10. Inserindo usuários
+11. Inserindo usuários
 - Podemos escrever um teste para o método POST:
   ```ts
   it('returns uuid of saved user on POST', async () => {
@@ -384,5 +384,76 @@
     }
     ```
 
-11. Métodos update e delete
+12. Métodos update e delete
 - O mesmo pensamento usado para o método POST será usado para os métodos DELETE e PUT
+- Modificando o arquivo de testes:
+  ```ts
+  ...
+  it('changes the name of a user by his uuid on PUT', async () => {
+    const modifiedUser = { 
+      username: "coronassomo",
+      password: 'MY_PASSWORD'
+    }
+    const response = await server.put('/'+lastUserId, modifiedUser)
+    expect(response.status).toBe(200)
+  })
+
+  it('remove user by his uuid on DELETE', async () => {
+    const response = await server.delete('/'+lastUserId)
+    expect(response.status).toBe(200)
+  })
+  ...
+  ```
+- Modificando as rotas:
+  ```ts
+  ...
+  usersRoute.put('/users/:uuid', async (req: Request, res: Response, next: NextFunction) => {
+    const uuid = req.params.uuid
+    const username: string = req.body.username 
+    const password: string = req.body.password 
+
+    if (!username || username==='' || !password || password==='' ) return res.status(400)
+
+    await userRepository.update({uuid, username, password})
+    res.status(200).send()
+  })
+
+  usersRoute.delete('/users/:uuid', async (req: Request, res: Response, next: NextFunction) => {
+    const uuid = req.params.uuid
+    await userRepository.delete(uuid)
+    res.status(200).send()
+  })
+  ...
+  ```
+- Por fim, nosso *user.repository.ts* :
+  ```ts
+  async update(user: User): Promise<void> {
+    const script = `
+      UPDATE app_user 
+      SET
+        username = $1,
+        password = crypt($2, $3)
+      WHERE uuid = $4
+    `
+
+    const salt = process.env.NODE_ENV === 'production' ? process.env.MY_SALT : 'MY_SALT'
+    const values = [user.username, user.password, salt, user.uuid]
+
+    await db.query<User>(script, values)
+  } 
+
+  async delete(uuid: string): Promise<void> {
+    const script = `
+      DELETE 
+      FROM app_user 
+      WHERE uuid = $1
+    `
+
+    const values = [uuid]
+
+    await db.query<User>(script, values)
+  } 
+  ```
+- Assim concluímos nossos métodos CRUD, mas ainda devemos lidar com os error!
+## Manuseando erros
+13. ...
