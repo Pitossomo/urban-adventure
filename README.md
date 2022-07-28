@@ -265,6 +265,15 @@
 
   export default User;
   ```
+- Escrevemos um teste com `jest` para o método GET no endpoint */user*:
+  ```ts
+  describe('/users', () => {
+    it('returns all users', async () => {
+      const response = await server.get('/') 
+      expect(response.data).toHaveLength(5)
+    })
+  ...
+  ```
 - Para testarmos, devemos criar uma instância separada do banco de dados, com ajuda das variáveis de ambiente para definir qual a connectionString necessária
   - no arquivo *db.ts*:
     ```ts
@@ -292,3 +301,39 @@
     },
     ```
 
+10. Retornando usuários pelo id
+- Podemos escrever um teste para o método GET no endpoint `/user/:uuid`:
+  ```ts
+    it('returns user data by on get', async () => {
+      const response = await server.get('/8c6a2328-f285-461e-bf8e-7e74dc9c7913')
+      expect(response.data).toHaveProperty('uuid')
+      expect(response.data).toMatchObject({ username: 'lisossomo' })
+    })
+  ```
+- A partir daí, escrevemos o código que irá lidar com a rota especificada:
+  - no arquivo *users.route.ts*
+    ```ts
+    usersRoute.get('/users/:uuid', async (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
+      const uuid = req.params.uuid
+      const user = await userRepository.findById(uuid)
+      if (user) res.status(200).send(user)
+      else res.status(404) 
+    })
+    ```
+  - no arquivo *user.repository.ts*
+    ```ts
+      async findById(uuid: string): Promise<User> {
+      
+        const query = `
+          SELECT uuid, username
+          FROM app_user
+          WHERE uuid = $1
+        `
+        const values = [uuid]
+        
+        const { rows } = await db.query<User>(query, values)
+        const user = rows[0] || null
+
+        return user
+      }
+    ```
