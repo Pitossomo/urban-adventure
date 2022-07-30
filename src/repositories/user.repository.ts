@@ -2,7 +2,10 @@ import DatabaseError from "../models/errors/database.error.model"
 import db from "../db"
 import User from "../models/user.model"
 
+const SALT = process.env.NODE_ENV === 'production' ? process.env.MY_SALT : "MY-SALT"
+
 class UserRepository {
+  
   async findAllUsers(): Promise<User[]> {
     const query = `
       SELECT uuid, username
@@ -24,11 +27,31 @@ class UserRepository {
       const values = [uuid]
       
       const { rows } = await db.query<User>(query, values)
-      const user = rows[0]
-
+      const [ user ] = rows
       return user
+
     } catch (error) {
       throw new DatabaseError("Id não encontrado", error)
+    }
+  }
+
+  async findByUsernameAndPassowrd(username: string, password: string){
+    try {
+      const query = `
+        SELECT uuid, username
+        FROM app_user
+        WHERE username = $1
+        AND password = crypt($2, $3)
+      `
+
+      const values = [username, password, SALT]
+      
+      const { rows } = await db.query<User>(query, values) 
+      const [ user ] = rows 
+
+      return user || null
+    } catch (error) {
+      throw new DatabaseError('Não foi possível verificar os dados fornecidos')
     }
   }
 
@@ -42,8 +65,7 @@ class UserRepository {
       RETURNING uuid
     `
 
-    const salt = process.env.NODE_ENV === 'production' ? process.env.MY_SALT : 'MY_SALT'
-    const values = [user.username, user.password, salt]
+    const values = [user.username, user.password, SALT]
 
     const { rows } = await db.query<{ uuid: string }>(script, values)
     const newUserId = rows[0].uuid || null
@@ -59,8 +81,7 @@ class UserRepository {
       WHERE uuid = $4
     `
 
-    const salt = process.env.NODE_ENV === 'production' ? process.env.MY_SALT : 'MY_SALT'
-    const values = [user.username, user.password, salt, user.uuid]
+    const values = [user.username, user.password, SALT, user.uuid]
 
     await db.query<User>(script, values)
   } 

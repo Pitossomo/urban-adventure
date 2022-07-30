@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import errorHandler from './middlewares/errorHandler.middleware'
+import authRoute from './routes/auth.route'
 import statusRoute from './routes/status.route'
 import usersRoute from './routes/users.route'
 
@@ -12,6 +13,7 @@ app.use(express.urlencoded({ extended: true }))
 // Routes configuration
 app.use(usersRoute)
 app.use(statusRoute)
+app.use(authRoute)
 
 // Error Handler middleware configuration
 app.use(errorHandler)

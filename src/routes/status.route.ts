@@ -7,4 +7,3 @@ statusRoute.get('/status', (req: Request, res: Response, next: NextFunction) => 
 })
 
 export default statusRoute
-

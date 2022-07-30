@@ -7,7 +7,5 @@ const server = axios.create({
 describe('/status', () => {
   it('returns succesfully', async () => {
     const response = await server.get('/') 
-
-    expect(response.data).toMatchObject({ 'foo': 'bar'})
   })
 })

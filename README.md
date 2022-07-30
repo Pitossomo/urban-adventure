@@ -232,7 +232,7 @@
     ```
 - Executados o arquivo de inicialização acima no site do database, criando a tabela de usuários e um usuário inicial
   - importante usar um nome da tabela de usuários diferente de *users*, que é o padrão que alguns databases já utilizam - no nosso caso, colocamos *app_users*
-
+-----
 9. Conectando com o postgres
 - Criaremos um arquivo *src/repositories/user.repositories.ts* para conectar com o banco de dados:
   ```ts
@@ -300,7 +300,7 @@
       "dev": "export NODE_ENV=test && export PORT=3001 && ts-node-dev --respawn --transpile-only --ignore-watch node_modules --no-notify src/index.ts"
     },
     ```
-
+-----
 10. Retornando usuários pelo id
 - Podemos escrever um teste para o método GET no endpoint `/user/:uuid`:
   ```ts
@@ -337,7 +337,7 @@
         return user
       }
     ```
-
+-----
 11. Inserindo usuários
 - Podemos escrever um teste para o método POST:
   ```ts
@@ -383,7 +383,7 @@
       return newUserId
     }
     ```
-
+-----
 12. Métodos update e delete
 - O mesmo pensamento usado para o método POST será usado para os métodos DELETE e PUT
 - Modificando o arquivo de testes:
@@ -455,6 +455,7 @@
   } 
   ```
 - Assim concluímos nossos métodos CRUD, mas ainda devemos lidar com os error!
+-----
 ## Manuseando erros
 13. Tratando erros com try-catch
 - Podemos usar um sistema de vários *try-catch* nas nossas rotas e lidarmos com cada uma delas como no código abaixo:
@@ -476,7 +477,7 @@
 - Ocorre que teriamos que fazer uma estrutura dessa para cada rota existente, e em cada rota avaliarmos cada tipo de erro possível
 - Poderiamos ainda usar uma função handleError(res, error) dentro do catch para reutilizarmos o código
 - No entanto, uma solução mais usual é o uso de um `middleware`
-
+-----
 14. Erros e Middlewares
 - Middleware é uma função que intercepta as requisições, usado para tratamento de erros ou alguma outra finalidade genérica 
 - Criaremos o *src/middlewares/errorHandler.middleware.ts*:
@@ -523,6 +524,31 @@
   })
   ```
 - Poderiamos [eliminar totalmente os blocos try-catch](https://fullstackopen.com/en/part4/testing_the_backend#eliminating-the-try-catch) com o uso da biblioteca [express-async-errors](https://www.npmjs.com/package/express-async-errors), importando-a no *index.ts*.
-
+-----
 ## Concluindo o microsserviço
-15. ...
+15. Autenticação
+- Usaremos dois métodos
+  - Basic Authentication
+  - Bearer Authentication
+-----
+16. Basic Auth
+- Criaremos um novo router *src/routes/auth.route.ts*:
+  ```ts
+  import { NextFunction, Request, Response, Router } from "express"
+  import ForbiddenError from "../models/errors/forbidden.error.model"
+
+  const authRouter = Router()
+
+  authRouter.post('/token', (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers['authorization']
+    try {
+      if (!authHeader) {
+        throw new ForbiddenError('Credenciais não informadas')
+      }
+    } catch (error) {
+      next(error)
+    }
+  })
+
+  export default authRouter
+  ```
