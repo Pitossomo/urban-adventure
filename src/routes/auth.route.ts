@@ -1,35 +1,23 @@
 import { NextFunction, Request, Response, Router } from "express"
 import jwt from 'jsonwebtoken'
+import basicAuthenticationMiddleWare from "../middlewares/basicAuthentication.middleware"
 import ForbiddenError from "../models/errors/forbidden.error.model"
-import userRepository from "../repositories/user.repository"
 
 const authRoute = Router()
 
-authRoute.post('/token', async (req: Request, res: Response, next: NextFunction) => {
+authRoute.post('/token', basicAuthenticationMiddleWare, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const authHeader = req.get('authorization')
-    if (!authHeader)
-      throw new ForbiddenError('Credenciais não informadas')
-  
-    const [authType, token] = authHeader.split(' ')
-    if (authType.toLowerCase() !== 'basic' || !token)
-      throw new ForbiddenError('Autenticação inválida')
-  
-    const tokenContent = Buffer.from(token, 'base64').toString('utf-8')
-    const [username, password] = tokenContent.split(':')
-    if (!username || !password) throw new ForbiddenError('Dados não informados')
-  
-    const user = await userRepository.findByUsernameAndPassowrd(username, password)
-    if (!user) throw new ForbiddenError('Usuário ou senha invalidos')
+    const user = req.user
 
-    console.log(user)
+    if (!user) throw new ForbiddenError("Usuário inválido")
 
     const jwtPayload = { username: user.username }
     const jwtOptions = { subject: user?.uuid }
     const secretKey = process.env.JWT_SECRET_KEY as string
 
-    const jwtSigned = jwt.sign(jwtPayload, secretKey , jwtOptions)
-   
+    const jwtSigned = jwt.sign(jwtPayload, secretKey , jwtOptions)   
+
+    res.status(200).json({ token: jwtSigned })
   
   } catch (error) {
     next(error)
