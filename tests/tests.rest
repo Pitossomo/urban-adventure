@@ -10,3 +10,7 @@ GET http://localhost:3001/users/c21c1fd1-ce1a-4e7f-a3cb-144463bd8f65 HTTP/1.1
 ### Expect status 200 and the generated token
 POST http://localhost:3001/token
 Authorization: Basic cGl0b3Nzb21vOk1ZLVBBU1NXT1JE
+
+### Expect status 200 and the generated token
+POST http://localhost:3001/token
+Authorization: Basic cGl0b3Nzb21vOk1ZLVBBU1NXT1JE
