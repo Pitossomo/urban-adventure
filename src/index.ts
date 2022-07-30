@@ -14,7 +14,9 @@ app.use(express.urlencoded({ extended: true }))
 // Routes configuration
 app.use('/status', statusRoute)
 app.use('/auth', authRoute)
-app.use('/users', usersRoute, jwtAuthenticationMiddleware)
+
+app.use(jwtAuthenticationMiddleware)
+app.use('/users', usersRoute)
 
 // Error Handler middleware configuration
 app.use(errorHandler)
