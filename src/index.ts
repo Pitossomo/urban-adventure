@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
-import bearerAuthenticationMiddleWare from './middlewares/bearerAuthentication.middleware'
+import jwtAuthenticationMiddleware from './middlewares/jwtAuthentication.middleware'
 import errorHandler from './middlewares/errorHandler.middleware'
 import authRoute from './routes/auth.route'
 import statusRoute from './routes/status.route'
@@ -12,9 +12,9 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // Routes configuration
-app.use(statusRoute)
-app.use(bearerAuthenticationMiddleWare, usersRoute)
-app.use(authRoute)
+app.use('/status', statusRoute)
+app.use('/auth', authRoute)
+app.use('/users', usersRoute, jwtAuthenticationMiddleware)
 
 // Error Handler middleware configuration
 app.use(errorHandler)

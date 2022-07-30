@@ -8,9 +8,9 @@ GET http://localhost:3001/users/fdsfdsfds HTTP/1.1
 GET http://localhost:3001/users/c21c1fd1-ce1a-4e7f-a3cb-144463bd8f65 HTTP/1.1
 
 ### Expect status 200 and the generated token
-POST http://localhost:3001/token
+POST http://localhost:3001/auth/token HTTP/1.1
 Authorization: Basic cGl0b3Nzb21vOk1ZLVBBU1NXT1JE
 
 ### Expect status 200 and the generated token
-POST http://localhost:3001/token
-Authorization: Basic cGl0b3Nzb21vOk1ZLVBBU1NXT1JE
+POST http://localhost:3001/auth/token/validate HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBpdG9zc29tbyIsImlhdCI6MTY1OTE4NTg3Nywic3ViIjoiYzIxYzFmZDEtY2UxYS00ZTdmLWEzY2ItMTQ0NDYzYmQ4ZjY1In0.D2frGg0Jb1gqHPJTtNOk9BZvxSaZhGyTvDz7itY0CPE

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import ForbiddenError from "../models/errors/forbidden.error.model";
 import userRepository from "../repositories/user.repository";
 
-async function basicAuthenticationMiddleWare(req: Request, res: Response, next: NextFunction ): User{
+async function basicAuthenticationMiddleware(req: Request, res: Response, next: NextFunction) {
   try {
     const authHeader = req.get('authorization')
     if (!authHeader) throw new ForbiddenError('Credenciais não informadas')
@@ -24,4 +24,4 @@ async function basicAuthenticationMiddleWare(req: Request, res: Response, next: 
   }
 }
 
-export default basicAuthenticationMiddleWare
+export default basicAuthenticationMiddleware

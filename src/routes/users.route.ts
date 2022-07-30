@@ -3,12 +3,12 @@ import userRepository from "../repositories/user.repository"
 
 const usersRoute = Router()
 
-usersRoute.get('/users', async (req: Request, res: Response, next: NextFunction) => {
+usersRoute.get('/', async (req: Request, res: Response, next: NextFunction) => {
   const users = await userRepository.findAllUsers()
   res.status(200).send(users)
 })
 
-usersRoute.get('/users/:uuid', async (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
+usersRoute.get('/:uuid', async (req: Request<{ uuid: string }>, res: Response, next: NextFunction) => {
   try {
     const uuid = req.params.uuid
     const user = await userRepository.findById(uuid)
@@ -18,7 +18,7 @@ usersRoute.get('/users/:uuid', async (req: Request<{ uuid: string }>, res: Respo
   }
 })
 
-usersRoute.post('/users', async (req: Request, res: Response, next: NextFunction) => {
+usersRoute.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const username: string = req.body.username 
     const password: string = req.body.password 
@@ -34,7 +34,7 @@ usersRoute.post('/users', async (req: Request, res: Response, next: NextFunction
   }
 })
 
-usersRoute.put('/users/:uuid', async (req: Request, res: Response, next: NextFunction) => {
+usersRoute.put('/:uuid', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const uuid = req.params.uuid
     const username: string = req.body.username 
@@ -49,7 +49,7 @@ usersRoute.put('/users/:uuid', async (req: Request, res: Response, next: NextFun
   }
 })
 
-usersRoute.delete('/users/:uuid', async (req: Request, res: Response, next: NextFunction) => {
+usersRoute.delete('/:uuid', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const uuid = req.params.uuid
     await userRepository.delete(uuid)
